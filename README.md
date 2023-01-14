@@ -1,4 +1,10 @@
-nuitka serverapp.py --standalone --onefile --follow-imports --include-data-dir=gui=gui
+## Python exe generation
+
+```shell
+yarn compile
+```
+
+> nuitka serverapp.py --standalone --onefile --follow-imports --include-data-dir=gui=gui --output-dir=dist --windows-icon-from-ico=public/favicon.ico --windows-disable-console
 
 # Getting Started with Create React App
 

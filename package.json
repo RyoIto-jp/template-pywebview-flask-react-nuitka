@@ -16,7 +16,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "compile": "nuitka serverapp.py --standalone --onefile --follow-imports --include-data-dir=gui=gui --output-dir=dist --windows-icon-from-ico=public/favicon.ico --windows-disable-console"
   },
   "eslintConfig": {
     "extends": [
