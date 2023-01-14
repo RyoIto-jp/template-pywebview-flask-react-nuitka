@@ -14,6 +14,8 @@
 /*.build
 /*.dist
 /*.onefile-build
+serverapp.exe
+.env
 
 # misc
 .DS_Store
