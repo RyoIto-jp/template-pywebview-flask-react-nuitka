@@ -1,3 +1,5 @@
+nuitka serverapp.py --standalone --onefile --follow-imports --include-data-dir=gui=gui
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -4,12 +4,16 @@
 /node_modules
 /.pnp
 .pnp.js
+/myvenv
 
 # testing
 /coverage
 
 # production
 /build
+/*.build
+/*.dist
+/*.onefile-build
 
 # misc
 .DS_Store
