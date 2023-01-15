@@ -12,7 +12,7 @@
 # production
 /build
 /dist
-.env
+# .env
 
 /web/build
 /result/*
