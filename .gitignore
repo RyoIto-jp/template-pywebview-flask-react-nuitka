@@ -14,6 +14,10 @@
 /dist
 .env
 
+/web/build
+/result/*
+*.pyc
+
 # misc
 .DS_Store
 .env.local
