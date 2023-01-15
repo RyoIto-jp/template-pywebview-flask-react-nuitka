@@ -52,8 +52,8 @@ def update_ticker():
 
 if __name__ == '__main__':
 
-    screen_width = int(webview.screens[1].width * 0.8) if webview.screens[1].width > 1250 else 1000
-    screen_height = int(webview.screens[1].height * 0.8)
+    screen_width = int(webview.screens[0].width * 0.8) if webview.screens[0].width > 1250 else 1000
+    screen_height = int(webview.screens[0].height * 0.8)
     print(screen_width) 
 
     # webview.create_window("PyWebView & Flask", "http://localhost:3100")
