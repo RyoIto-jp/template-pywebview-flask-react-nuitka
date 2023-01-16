@@ -9,33 +9,39 @@ import sys
 
 start_time = time.time()
 
+# ヘッダーからレポートの状態を取得する関数 
 def getReportStatus(header_text):
+    # 用いる文字列を辞書で定義する 
     choices = {
         "この期間の勤務データはまだ月次提出": "状態：未入力",
         "この期間の勤務データは既に提出され": "第１段階の承認待ち",
         "この期間の実績はすでに承認済です。": "最終承認済み"
     }
+   # ヘッダー文字列をカラムが入力されているかどうかをチェック 
     for choice in choices:
+        # もしヘッダー文字列が辞書に定義されていれば 
         if choice in header_text:
+            # Trueなら該当のカラムを返す 
             return choices[choice]
             break
-
+    # Falseならなにもないを返す 
     return "empty"
 
+# Name属性からvalueを取得する 
 def form_getattrs_value(element, name_key):
-    # Name属性からvalueを取得する
+    # 要素からname属性がname_keyかつtype属性がhiddenの値を取得し、その名前をrに格納 
     r = element.find(
         'input', attrs={'name': name_key, 'type': 'hidden'})
+    # 取得したrの属性のvalueを返す 
     return r.get_attribute_list('value')[0]  # type:ignore
 
+# ログイン要求を行う関数 
 def login_request(url, user_cred):
-
-    # ログインページを表示して、現在セッション情報を取得する
+    # URLからログインページを取得し、現在のセッション情報を取得する 
     response_0 = requests.get(url)
     soup_login = BeautifulSoup(response_0.text, 'lxml')
 
-    # ログインする
-
+    # ログイン処理 
     r = session.post(
         url=url,
         data={
@@ -50,7 +56,9 @@ def login_request(url, user_cred):
         }
     )
 
+    # ログイン完了の出力 
     print('ログイン完了', time.time() - start_time)
+    # ログイン要求の結果を返す 
     return r
 
 

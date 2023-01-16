@@ -1,8 +1,6 @@
 from flask import Flask, redirect
 from flask_cors import CORS
 
-
-
 from src.blueprint.webui import webui
 from src.blueprint.api import api
 
@@ -21,14 +19,13 @@ def after_request(res):
     return res
 
 
-# todo: エンドポイント毎に割り当てる方法を確認する
 CORS(app)                               # CORS対策
 
-# todo: blueprint
 app.register_blueprint(webui)
 app.register_blueprint(api)
 
 
+# /favicon.icoにアクセスがあった場合、`./favicon.ico`ファイルを返す
 @app.route("/favicon.ico")
 def favicon():
     return app.send_static_file("./favicon.ico")
@@ -38,6 +35,7 @@ def favicon():
 # -----------------------------------------------------------------
 
 
+# ルートパスにアクセスがあった場合、/webuiへリダイレクトする
 @app.route('/')
 def index():
     # return "hello World!"

@@ -6,14 +6,16 @@ DIR_NAME = "./tmp"
 
 
 def pkl_dumps_loads(obj: dict[str, str], pkl_name: str) -> dict[str, str]:
-    """dumps -> file.write -> file.read -> loads"""
+    """dumps -> file.write -> file.read -> loadsを行い、pickleオブジェクトを読み書きする"""
     path: str = os.path.join(DIR_NAME, pkl_name)
+    # pickleオブジェクトを書き出す
     with open(path, "wb") as f:
         f.write(pickle.dumps(obj))
-
+    # pickleオブジェクトを読み込む
     with open(path, "rb") as f:
         ojb_: dict[str, str] = pickle.loads(f.read())
 
+    # 読み込んだpickleオブジェクトを返す
     return ojb_
 
 

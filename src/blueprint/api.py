@@ -117,37 +117,31 @@ def getMembers(val):
     return members
 
 
-# def publish_hello():
-#     sse.publish({"message": "Hello!"}, type='greeting')
-#     return "Message sent!"
-
-# def updateMessage(text):
-#     eel.pyUpdateMessage(text)
-
-
 @api.post('/company')
 def py_download_company():
+    # COMPANYから工数表を取得
+
+    # パラメータを取得
     val = request.json
+
+    # 同期モードに応じてライブラリのインポート
     if val.get('async'):
         from . import mult_web as company  # 非同期処理有効：高速化、サーバー負荷増
     else:
         from src import company
     print(val)
     print('called')
+
+    # パラメータをpickleで一時保存
     pkl.pkl_dumps_loads(val, 'company_cond')
-    # credential = {'user': val['username'], 'pass': val['password']}
-    # target_date = (str(val['Year']), str(val['Month']))
+
+    # membersパラメータを文字列からリスト形式に変換する
     members = getMembers(val['members'])
-    # web_settings = {
-    #     "credential": credential,
-    #     "target_date": target_date,
-    #     "members": members,
-    #     "is_self": val['isSelf']
-    # }
     val['members'] = members
 
     print(members)
     if members:
+        # COMPANY取得関数を実行
         company.main(val, queue)
         return val
 

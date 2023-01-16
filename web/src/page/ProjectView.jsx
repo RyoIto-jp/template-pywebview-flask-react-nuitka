@@ -27,11 +27,11 @@ function fixTypeName(typeName) {
     .replace("株式会社", '')
     .replace("刈谷ｱｳﾄｿｰｼﾝｸﾞﾃｸﾉﾛｼﾞｰ", '')
     .replace("機電-", '')
-    .replace(/( |）|（)/g,'')
-    .replace(/RD-(.*)ｱｳﾄｿｰｼﾝｸﾞﾃｸﾉﾛｼﾞｰ/g,'')
-    .replace(/(.*)ｱｳﾄｿｰｼﾝｸﾞﾃｸﾉﾛｼﾞｰ/g,'')
-    .replace('RD-刈谷愛三工業愛三工業','刈谷愛三工業')
-    .replace('刈谷愛三工業愛三工業','刈谷愛三工業')
+    .replace(/( |）|（)/g, '')
+    .replace(/RD-(.*)ｱｳﾄｿｰｼﾝｸﾞﾃｸﾉﾛｼﾞｰ/g, '')
+    .replace(/(.*)ｱｳﾄｿｰｼﾝｸﾞﾃｸﾉﾛｼﾞｰ/g, '')
+    .replace('RD-刈谷愛三工業愛三工業', '刈谷愛三工業')
+    .replace('刈谷愛三工業愛三工業', '刈谷愛三工業')
 }
 
 // hh:mm を hour(int)に変換
@@ -51,46 +51,111 @@ const ProjectView = (props) => {
   })
   const cls = useStyles()
 
+  // プロット用データを作成し、必要なデータを取得する関数
   useEffect(() => {
-    // プロット用データ作成
+    // propsを渡して、プロットデータを作成
     const newPlot = createPlotData(props.data, optionsVal)
+    // 作成したプロットデータをstateにセット
     setPlot(newPlot)
+    // 確認用
     // console.log(newPlot)
   }, [props])
 
   /** プロットデータ作成 */
-  const createPlotData = (data, options) => {
-    const newData = data
-    newData.map(row => {
-      if (row.type) {
-        row.type = fixTypeName(row.type)
-      }
-      return true
-    })
-    console.log(data)
-    console.log(newData)
+  // const createPlotData = (data, options) => {
+  //   const newData = data
+  //   newData.map(row => {
+  //     if (row.type) {
+  //       row.type = fixTypeName(row.type)
+  //     }
+  //     return true
+  //   })
+  //   console.log(data)
+  //   console.log(newData)
 
+  //   // プロジェクトコード一覧
+  //   const projects = newData
+  //     .filter((x, i, self) =>
+  //       self.findIndex(e => e.type === x.type) === i && x.type
+  //     )
+  //     .map(x=>x.type).map(row => fixTypeName(row))
+  //     .filter((x, i, self) =>
+  //       self.findIndex(e => e === x) === i && x
+  //     )
+  //     console.log(projects)
+  //   setPrjList(projects)
+
+  //   // ステータス一覧
+  //   const newStatusList = newData
+  //     .filter((x, i, self) => self.findIndex(e => e.status === x.status) === i && x.status)
+  //     .map(x => x.status)
+  //   setStatusList(newStatusList)
+
+  //   // プロット用データ作成
+  //   const newPlot = [...data]
+  //     // Nameフィルタ
+  //     .filter(item => (props.val.Name !== "All" ? item.Name === props.val.Name : true))
+  //     // 年月フィルタ
+  //     .filter(item => item.date.split('-')[0] === props.val.Year)
+  //     .filter(item => item.date.split('-')[1] === props.val.Month)
+  //     // Group by 氏名
+  //     .filter((x, i, self) => self.findIndex(e => e.Name === x.Name) === i)
+  //     .map(item => {
+  //       // 工数以外のデータ構成作成
+  //       const row = {
+  //         Name: item.Name, comment: item.comment,
+  //         status: item.status, Year: item.date.split('-')[0],
+  //         Month: item.date.split('-')[1]
+  //       }
+
+  //       // 年月,氏名でフィルタ
+  //       const prjRow = data.filter(org => org.date.split('-')[0] === row.Year && org.date.split('-')[1] === row.Month && org.Name === row.Name)
+  //       // console.log(prjRow)
+  //       // console.log(data)
+
+  //       // projectsをフィルタ
+  //       const filterProjects = projects.filter(project => options.project === "ALL" ? true : options.project === project)
+
+  //       console.log(prjRow)
+  //       // フィルタ内 ＆ プロジェクトごとに合計工数
+  //       for (let project of filterProjects) {
+  //         if (prjRow) {
+  //           row[project] = prjRow
+  //             .filter(x => fixTypeName(x.type) === project) // 現在プロジェクトのみ 
+  //             .filter(x => options.status === 'ALL' ? true : options.status === x.status)
+  //             .map(x => strToTime(x.times)) // 工数時刻→時間[hr]を抽出して配列に
+  //             .reduce((sum, elm) => sum + elm, 0) // 合計
+  //         }
+  //       }
+  //       return row
+  //     })
+  //   return newPlot
+  // }
+
+  const createPlotData = (data, options) => {
     // プロジェクトコード一覧
-    const projects = newData
-      .filter((x, i, self) =>
-        self.findIndex(e => e.type === x.type) === i && x.type
-      )
-      .map(x=>x.type).map(row => fixTypeName(row))
-      .filter((x, i, self) =>
-        self.findIndex(e => e === x) === i && x
-      )
-      console.log(projects)
-    setPrjList(projects)
+    const projects = data
+        .filter((x, i, self) =>
+          self.findIndex(e => e.type === x.type) === i && x.type
+        )
+        .map(x => x.type).map(row => fixTypeName(row)) // 型名を修正
+        .filter((x, i, self) =>
+          self.findIndex(e => e === x) === i && x
+        );
+    
+    setPrjList(projects); // プロジェクトコード一覧を設定
 
     // ステータス一覧
-    const newStatusList = newData
-      .filter((x, i, self) => self.findIndex(e => e.status === x.status) === i && x.status)
-      .map(x => x.status)
-    setStatusList(newStatusList)
+    const newStatusList = data
+        .filter((x, i, self) => self.findIndex(e => e.status === x.status) === i && x.status)
+        .map(x => x.status); // ステータスのみ抽出
+        
+    setStatusList(newStatusList); // ステータス一覧を設定
 
-    // プロット用データ作成
-    const newPlot = [...data]
-      // Nameフィルタ
+    // プロット用データを作成します
+    // 年月フィルタとProjectフィルタを使用し、各個人別にプロジェクトの作業時間を集計します
+    const newPlot = data
+      // 名前フィルタ
       .filter(item => (props.val.Name !== "All" ? item.Name === props.val.Name : true))
       // 年月フィルタ
       .filter(item => item.date.split('-')[0] === props.val.Year)
@@ -98,36 +163,28 @@ const ProjectView = (props) => {
       // Group by 氏名
       .filter((x, i, self) => self.findIndex(e => e.Name === x.Name) === i)
       .map(item => {
-        // 工数以外のデータ構成作成
-        const row = {
-          Name: item.Name, comment: item.comment,
-          status: item.status, Year: item.date.split('-')[0],
-          Month: item.date.split('-')[1]
-        }
-
-        // 年月,氏名でフィルタ
-        const prjRow = data.filter(org => org.date.split('-')[0] === row.Year && org.date.split('-')[1] === row.Month && org.Name === row.Name)
-        // console.log(prjRow)
-        // console.log(data)
-
-        // projectsをフィルタ
-        const filterProjects = projects.filter(project => options.project === "ALL" ? true : options.project === project)
-
-        console.log(prjRow)
-        // フィルタ内 ＆ プロジェクトごとに合計工数
-        for (let project of filterProjects) {
-          if (prjRow) {
-            row[project] = prjRow
-              .filter(x => fixTypeName(x.type) === project) // 現在プロジェクトのみ 
-              .filter(x => options.status === 'ALL' ? true : options.status === x.status)
-              .map(x => strToTime(x.times)) // 工数時刻→時間[hr]を抽出して配列に
-              .reduce((sum, elm) => sum + elm, 0) // 合計
+          // 工数以外のデータ構成作成
+          const row = {
+            Name: item.Name, comment: item.comment,
+            status: item.status, Year: item.date.split('-')[0],
+            Month: item.date.split('-')[1]
           }
-        }
-        return row
-      })
-    return newPlot
-  }
+          // プロジェクトごとに合計工数
+          for (let project of projects) {
+            if (options.project === "ALL" || options.project === project) { // プロジェクトのフィルタ
+              row[project] = data
+                .filter(x => x.date.split('-')[0] === row.Year && x.date.split('-')[1] === row.Month && x.Name === row.Name)
+                .filter(x => fixTypeName(x.type) === project) // 現在プロジェクトのみ 
+                .filter(x => options.status === 'ALL' ? true : options.status === x.status)
+                .map(x => strToTime(x.times)) // 工数時刻→時間[hr]を抽出して配列に
+                .reduce((sum, elm) => sum + elm, 0) // 合計
+            }
+          }
+          return row;
+        });
+    return newPlot;
+}
+
 
   const handleRadio = (event) => {
     console.log(event.target)
@@ -140,7 +197,7 @@ const ProjectView = (props) => {
   }
 
   const plotColors = [
-    "#8884d8", "#82ca9d", "#ca829d","#CC8855", "#558888", "#FF00FF"
+    "#8884d8", "#82ca9d", "#ca829d", "#CC8855", "#558888", "#FF00FF"
   ]
 
   return (
@@ -192,7 +249,7 @@ const CustomTooltip = ({ active, payload, label, src }) => {
     && x.type.indexOf('0項番') !== -1
     && x.status === '日次提出'
   )
-  const total = Math.round(payload.map(x=>x.value).reduce((sum, elm)=> sum + elm, 0) * 10) / 10
+  const total = Math.round(payload.map(x => x.value).reduce((sum, elm) => sum + elm, 0) * 10) / 10
   // console.log(tooltip)
   const styled = {
     background: '#EEEEFEEF',

@@ -53,15 +53,18 @@ const DownloadsPage = () => {
 
   function updateprogress (data, t_users) {
     console.log(data)
-    // console.log(users)
-    const newData = [...users]
     console.log(t_users)
+
+    // スプレッド構文を使用して新しいデータやユーザーを生成
     const newUsers = [...t_users]
+    // データの配列からフィルタリング、そしてMapを使用してステータスの変更を行う
     newUsers.filter(user=>data.includes(user.id)).map(user=>{
       user.progress = 100;
       return user
     })
+    // setUsersを使用して更新された配列としてユーザーを設定
     setUsers(newUsers)
+    // pyUpdateMessageを使用してデータの反映を描画する
     pyUpdateMessage(data)
   }
 
@@ -69,7 +72,7 @@ const DownloadsPage = () => {
   useEffect(() => {
     /** 入力フォーム初期値 */
     const setInitialFormData = async () => {
-      // const response = await eel.getUsers()();
+      // axiosを使用してAPIから必要なデータを取得し、フォームの初期値を設定する
       const response = await axios.get("/api/users")
       const user_data = response.data.map(x=> ({...x, progress: 0})).filter(x=>x.status === '1')
       setUsers(user_data)
@@ -86,18 +89,21 @@ const DownloadsPage = () => {
       }
       setVal(data)
       console.log(sse)
+      // イベントソースからprogress-itemイベントを受信したら、progress変数を更新する
       sse.addEventListener('progress-item', function(e){
         updateprogress(e.data, user_data)
       })
+      // イベントソースからlast-itemイベントを受信したら、処理終了時に必要なデータを受信する
       sse.addEventListener('last-item', function(e){
         console.log(e.data)
       })
     }
+    // 開発・本番でホストを切り替える
     const devHost = process.env.REACT_APP_HOST ? process.env.REACT_APP_HOST: ''
+    // イベントソースを登録
     const sse = new EventSource(devHost + '/api/stream');
     setInitialFormData()
     
-
     return () => {
       sse.close();
     };
@@ -119,11 +125,9 @@ const DownloadsPage = () => {
   async function handleSubmit() {
     console.log('Submit arg')
     console.log(val)
-    // let result = await eel.py_download_company(val)();
     let result = await axios.post("/api/company", val)
     console.log('Submit ret')
     console.log(result);
-    // setVal(result)
     const newUsers = [...users];
     newUsers.map(user=>{
       user.progress = 100;
@@ -140,7 +144,6 @@ const DownloadsPage = () => {
   /** 前回データの読み込み(Python) */
   const pyLoadHistory = async () => {
     const response = await axios.get("/api/loadconfig?" + 'obj_name=company_cond')
-    // let result = await eel.load_pickle('company_cond')();
     let result = response.data
     result.members = val.members;
     console.log(result)
