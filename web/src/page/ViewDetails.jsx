@@ -9,7 +9,7 @@ const ViewDetails = (props) => {
   const diffStyle = (strTime1, strTime2) => {
     // console.log(strTime1, strTime2)
     let diff = false
-    if(strTime1 && strTime2){
+    if (strTime1 && strTime2) {
       const dt1 = new Date(Date.parse(`2022-01-01T${('0' + strTime1).slice(-5)}:00`)).getTime()
       const dt2 = new Date(Date.parse(`2022-01-01T${('0' + strTime2).slice(-5)}:00`)).getTime()
       diff = dt1 - dt2

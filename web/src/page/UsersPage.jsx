@@ -76,7 +76,7 @@ const UsersPage = () => {
 
     const updateUser = async (orgData, payload) => {
         //todo:  await eel.updateUser(orgData, payload)
-        await axios.put('/api/users', {users:orgData, payload: payload})
+        await axios.put('/api/users', { users: orgData, payload: payload })
         getUsers()
     }
 
@@ -95,7 +95,7 @@ const UsersPage = () => {
         console.log("addUser")
         if (users.filter(x => x.id === "").length === 0) {
             //todo: await eel.addUser(users)();
-            await axios.post('/api/users', {users: users})
+            await axios.post('/api/users', { users: users })
             getUsers()
         } else {
             alert("不正なデータが存在するため処理が続行できません。\n空データを削除するなど修正をしてください。")
@@ -106,8 +106,8 @@ const UsersPage = () => {
         console.log('deleteUser')
         if (window.confirm("削除してもよろしいですか？")) {
             // await eel.deleteUser(users, index)();
-            console.log( {users:users, index: index})
-            await axios.delete('/api/users', {data:{users:users, index: index}})
+            console.log({ users: users, index: index })
+            await axios.delete('/api/users', { data: { users: users, index: index } })
             getUsers();
         } else {
             console.log('no!')

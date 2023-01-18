@@ -135,21 +135,21 @@ const ProjectView = (props) => {
   const createPlotData = (data, options) => {
     // プロジェクトコード一覧
     const projects = data
-        .filter((x, i, self) =>
-          self.findIndex(e => e.type === x.type) === i && x.type
-        )
-        .map(x => x.type).map(row => fixTypeName(row)) // 型名を修正
-        .filter((x, i, self) =>
-          self.findIndex(e => e === x) === i && x
-        );
-    
+      .filter((x, i, self) =>
+        self.findIndex(e => e.type === x.type) === i && x.type
+      )
+      .map(x => x.type).map(row => fixTypeName(row)) // 型名を修正
+      .filter((x, i, self) =>
+        self.findIndex(e => e === x) === i && x
+      );
+
     setPrjList(projects); // プロジェクトコード一覧を設定
 
     // ステータス一覧
     const newStatusList = data
-        .filter((x, i, self) => self.findIndex(e => e.status === x.status) === i && x.status)
-        .map(x => x.status); // ステータスのみ抽出
-        
+      .filter((x, i, self) => self.findIndex(e => e.status === x.status) === i && x.status)
+      .map(x => x.status); // ステータスのみ抽出
+
     setStatusList(newStatusList); // ステータス一覧を設定
 
     // プロット用データを作成します
@@ -163,27 +163,27 @@ const ProjectView = (props) => {
       // Group by 氏名
       .filter((x, i, self) => self.findIndex(e => e.Name === x.Name) === i)
       .map(item => {
-          // 工数以外のデータ構成作成
-          const row = {
-            Name: item.Name, comment: item.comment,
-            status: item.status, Year: item.date.split('-')[0],
-            Month: item.date.split('-')[1]
+        // 工数以外のデータ構成作成
+        const row = {
+          Name: item.Name, comment: item.comment,
+          status: item.status, Year: item.date.split('-')[0],
+          Month: item.date.split('-')[1]
+        }
+        // プロジェクトごとに合計工数
+        for (let project of projects) {
+          if (options.project === "ALL" || options.project === project) { // プロジェクトのフィルタ
+            row[project] = data
+              .filter(x => x.date.split('-')[0] === row.Year && x.date.split('-')[1] === row.Month && x.Name === row.Name)
+              .filter(x => fixTypeName(x.type) === project) // 現在プロジェクトのみ 
+              .filter(x => options.status === 'ALL' ? true : options.status === x.status)
+              .map(x => strToTime(x.times)) // 工数時刻→時間[hr]を抽出して配列に
+              .reduce((sum, elm) => sum + elm, 0) // 合計
           }
-          // プロジェクトごとに合計工数
-          for (let project of projects) {
-            if (options.project === "ALL" || options.project === project) { // プロジェクトのフィルタ
-              row[project] = data
-                .filter(x => x.date.split('-')[0] === row.Year && x.date.split('-')[1] === row.Month && x.Name === row.Name)
-                .filter(x => fixTypeName(x.type) === project) // 現在プロジェクトのみ 
-                .filter(x => options.status === 'ALL' ? true : options.status === x.status)
-                .map(x => strToTime(x.times)) // 工数時刻→時間[hr]を抽出して配列に
-                .reduce((sum, elm) => sum + elm, 0) // 合計
-            }
-          }
-          return row;
-        });
+        }
+        return row;
+      });
     return newPlot;
-}
+  }
 
 
   const handleRadio = (event) => {

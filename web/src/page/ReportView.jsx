@@ -32,10 +32,10 @@ const useStyles = makeStyles({
     margin: 20,
     fontStyle: 'italic'
   },
-  status:{
-    display:'flex',
+  status: {
+    display: 'flex',
     flexDirection: 'row',
-    gap:10,
+    gap: 10,
     flexWrap: 'wrap',
   }
 })
@@ -45,10 +45,10 @@ const ReportView = (props) => {
   const cls = useStyles()
   const statusLabels = ["日次提出", "一時保存", "未提出"]
   const [reportData, setReportData] = useState(["a", "b"])
-  const users = props.users.filter(user => 
+  const users = props.users.filter(user =>
     user.label !== 'All'  // ユーザーリストからALLを除外
     && (props.val.Name === 'All' ? true : props.val.Name === user.label) // ユーザー指定あればフィルタ。なければ全員。
-    )
+  )
   const [maxValue, setMaxValue] = useState(20)
   // console.log(users)
 
@@ -116,11 +116,11 @@ const ReportView = (props) => {
   return (
     <div>
       <div className={cls.status}>
-        <div><span style={{color:"#D77"}}>■</span>データなし</div>
-        <div><span style={{color:"#FAA"}}>■</span>7日以前未入力あり</div>
-        <div><span style={{color:"#FD5"}}>■</span>15日以前未入力あり</div>
-        <div><span style={{color:"#88F"}}>■</span>28日以前未入力あり</div>
-        <div><span style={{color:"#CFF"}}>■</span>28日まで入力OK</div>
+        <div><span style={{ color: "#D77" }}>■</span>データなし</div>
+        <div><span style={{ color: "#FAA" }}>■</span>7日以前未入力あり</div>
+        <div><span style={{ color: "#FD5" }}>■</span>15日以前未入力あり</div>
+        <div><span style={{ color: "#88F" }}>■</span>28日以前未入力あり</div>
+        <div><span style={{ color: "#CFF" }}>■</span>28日まで入力OK</div>
       </div>
       <div className={cls.root}>
 

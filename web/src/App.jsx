@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 // import {hot} from 'react-hot-loader'
-import './App.css';
+// import './App.css';
 
 import { CenteredTabs } from './component/Tabs';
 import ViewPages from './page/ViewPages';
@@ -19,9 +19,9 @@ class App extends Component {
     return (
       <div>
         <CenteredTabs labels={[
-          "Views", 
-          "Downloads", 
-          "Users", 
+          "Views",
+          "Downloads",
+          "Users",
           // "Logs",
         ]}>
           <ViewPages></ViewPages>

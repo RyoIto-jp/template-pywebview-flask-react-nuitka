@@ -4,11 +4,9 @@ import { Years, Months } from '../data/data'
 import { VerticalTabs } from '../component/Tabs'
 import ViewSummary from './ViewSummary'
 import ViewDetails from './ViewDetails'
-import { pyGetFileList, pyGetFiles, jsGetFileList, jsGetFiles } from '../function/filer'
 import ReportView from './ReportView'
 import ProjectView from './ProjectView'
 import axios from 'axios'
-import { ContactsOutlined } from '@material-ui/icons'
 
 
 const ViewPages = () => {
@@ -28,35 +26,29 @@ const ViewPages = () => {
 
 
   useEffect(() => {
-    // axios.get('api/xxx3').then(r=>{
-    //   console.log(r.data)
-    // })
+
     /** resultフォルダ内のデータ取得 */
     async function fetchData() {
-      //! --- mode ---
-      const lng_mode = 'py' // 'py'  'js'
+
       let fileList = {}
       let dataList = []
-      if (lng_mode === 'py') {
-        // fileList = await pyGetFileList() //* --- get file list ---
-        const filelist_req = await axios.get('/api/xxx3')
-        fileList = filelist_req.data //* --- get file list ---
-        // console.log(fileList)
-        // dataList = await pyGetFiles(fileList) //* --- get worktime data each file. ---
-        const datas = await axios.post('/api/data', {
-          files: fileList
-        }) //* --- get worktime data each file. ---
-        // console.log(datas.data)
-        dataList = datas.data
-        console.log(dataList)
-      } else {
-        // fileList = await jsGetFileList()      //* --- get file list ---
-        // dataList = await jsGetFiles(fileList) //* --- get worktime data each file. ---
-      }
+
+      // fileList = await pyGetFileList() //* --- get file list ---
+      const filelist_req = await axios.get('/api/xxx3')
+      fileList = filelist_req.data //* --- get file list ---
+      console.log(fileList)
+      // dataList = await pyGetFiles(fileList) //* --- get worktime data each file. ---
+      const datas = await axios.post('/api/data', {
+        files: fileList
+      }) //* --- get worktime data each file. ---
+      console.log(datas.data)
+      dataList = datas.data
+      console.log(dataList)
+
       // console.log(fileList)
       // console.log(dataList)
       setRawData(dataList)
-      
+
 
       // get unique users list from alldata.
       const uniqueUsers = dataList
@@ -68,23 +60,22 @@ const ViewPages = () => {
 
       // フィルタ初期値を現在年月に設定
       const dt = new Date();
-      const newFilter = { ...val, Name: 'All', Year: String(dt.getFullYear()), Month: String(dt.getMonth() + 1)}
+      const newFilter = { ...val, Name: 'All', Year: String(dt.getFullYear()), Month: String(dt.getMonth() + 1) }
       setVal(newFilter)
-      
+
       // Group by 日付,社員番号
       const newData = dataList.filter((item, i, self) =>
-      self.findIndex(e => e.date === item.date && e.Num === item.Num) === i)
+        self.findIndex(e => e.date === item.date && e.Num === item.Num) === i)
       setData(newData)
-      
 
       console.log(newFilter)
       console.log(newData)
-      
+
       // フィルタを適用
       const newFilterData = newData.filter(item =>
         (newFilter.Name !== "All" ? item.Name === newFilter.Name : true)
-          && item.date.split('-')[0] === newFilter.Year
-          && item.date.split('-')[1] === newFilter.Month)
+        && item.date.split('-')[0] === newFilter.Year
+        && item.date.split('-')[1] === newFilter.Month)
       // console.log(newFilterData)
       setFilterData(newFilterData)
 
@@ -95,7 +86,6 @@ const ViewPages = () => {
 
 
   const handleChange = (event) => {
-    // console.log([event.target.name], event.target.value)
     const newFilter = { ...val, [event.target.name]: event.target.value }
     setVal(newFilter);
     console.log(newFilter);
@@ -144,7 +134,7 @@ const ViewPages = () => {
           users={users} val={val}
           data={rawData} filterData={filterData}>
         </ProjectView>
-        
+
       </VerticalTabs>
     </div>
   )

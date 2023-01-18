@@ -18,16 +18,16 @@ const useStyles = makeStyles({
     height: 120,
     overflowY: 'scroll',
     padding: '10px 20px 0 20px',
-    border:'solid 1px #CCC',
+    border: 'solid 1px #CCC',
     backgroundColor: '#EEEEEE80',
     position: 'relative',
     "&> div": {
       padding: 2,
-      color:'#777',
-      width:200,
+      color: '#777',
+      width: 200,
       display: 'flex',
       // justifyContent: 'space-around',
-      gap:12,
+      gap: 12,
     }
   },
   membermsg: {
@@ -51,14 +51,14 @@ const DownloadsPage = () => {
   });
   const cls = useStyles();
 
-  function updateprogress (data, t_users) {
+  function updateprogress(data, t_users) {
     console.log(data)
     console.log(t_users)
 
     // スプレッド構文を使用して新しいデータやユーザーを生成
     const newUsers = [...t_users]
     // データの配列からフィルタリング、そしてMapを使用してステータスの変更を行う
-    newUsers.filter(user=>data.includes(user.id)).map(user=>{
+    newUsers.filter(user => data.includes(user.id)).map(user => {
       user.progress = 100;
       return user
     })
@@ -74,7 +74,7 @@ const DownloadsPage = () => {
     const setInitialFormData = async () => {
       // axiosを使用してAPIから必要なデータを取得し、フォームの初期値を設定する
       const response = await axios.get("/api/users")
-      const user_data = response.data.map(x=> ({...x, progress: 0})).filter(x=>x.status === '1')
+      const user_data = response.data.map(x => ({ ...x, progress: 0 })).filter(x => x.status === '1')
       setUsers(user_data)
       console.log(user_data)
       const dt = new Date();
@@ -90,20 +90,20 @@ const DownloadsPage = () => {
       setVal(data)
       console.log(sse)
       // イベントソースからprogress-itemイベントを受信したら、progress変数を更新する
-      sse.addEventListener('progress-item', function(e){
+      sse.addEventListener('progress-item', function (e) {
         updateprogress(e.data, user_data)
       })
       // イベントソースからlast-itemイベントを受信したら、処理終了時に必要なデータを受信する
-      sse.addEventListener('last-item', function(e){
+      sse.addEventListener('last-item', function (e) {
         console.log(e.data)
       })
     }
     // 開発・本番でホストを切り替える
-    const devHost = process.env.REACT_APP_HOST ? process.env.REACT_APP_HOST: ''
+    const devHost = process.env.REACT_APP_HOST ? process.env.REACT_APP_HOST : ''
     // イベントソースを登録
     const sse = new EventSource(devHost + '/api/stream');
     setInitialFormData()
-    
+
     return () => {
       sse.close();
     };
@@ -129,7 +129,7 @@ const DownloadsPage = () => {
     console.log('Submit ret')
     console.log(result);
     const newUsers = [...users];
-    newUsers.map(user=>{
+    newUsers.map(user => {
       user.progress = 100;
       return user
     })
@@ -157,16 +157,16 @@ const DownloadsPage = () => {
     const isErr = text_message.toUpperCase().includes('ERROR')
     console.log(isErr)
     let newUsers = [...users]
-    if(text_message.slice(0,6) === 'THREAD'){
-      const prog_idx = {'ENTER': 20,LOGIN:40, FIND:50, LOADED: 60, EXIT: 100}
+    if (text_message.slice(0, 6) === 'THREAD') {
+      const prog_idx = { 'ENTER': 20, LOGIN: 40, FIND: 50, LOADED: 60, EXIT: 100 }
       const user_id = text_message.slice(8, 14)
       const progress = prog_idx[text_message.split('-')[1].trim()]
-      console.log(user_id, progress, newUsers.findIndex(x=>x.id===user_id))
+      console.log(user_id, progress, newUsers.findIndex(x => x.id === user_id))
       console.log(text_message)
 
-      newUsers[newUsers.findIndex(x=>x.id===user_id)].progress = progress
+      newUsers[newUsers.findIndex(x => x.id === user_id)].progress = progress
       setUsers(newUsers)
-    }else{
+    } else {
       setMessage({ text: text_message, type: isErr ? 9 : 0 })
     }
   }

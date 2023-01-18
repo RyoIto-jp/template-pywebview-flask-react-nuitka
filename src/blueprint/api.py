@@ -1,19 +1,15 @@
-from flask import Blueprint, jsonify, request, request, jsonify, Response
+from flask import Blueprint, jsonify, request, Response
 
 from queue import Queue
 import datetime
-import time
-import json
 
 from src import pickle_obj as pkl
 # from . import company
-import datetime
 import glob
-import time
 import csv
 import os
 
-from werkzeug.exceptions import NotFound, BadRequest, InternalServerError, abort, MethodNotAllowed
+from werkzeug.exceptions import NotFound, BadRequest, InternalServerError, MethodNotAllowed
 # from flask.views import MethodView
 
 api = Blueprint(
@@ -29,6 +25,7 @@ api = Blueprint(
 #     res.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
 #     return res
 
+
 @api.errorhandler(BadRequest)
 @api.errorhandler(NotFound)
 @api.errorhandler(InternalServerError)
@@ -43,12 +40,15 @@ def error_handler(e):
     })
     return res, e.code
 
+
 # ---------------------------------------
 # https://tokidoki-web.com/2020/02/flask%E3%81%A7%E7%B0%A1%E6%98%93%E7%89%88%E3%83%97%E3%83%AD%E3%82%B0%E3%83%AC%E3%82%B9%E3%83%90%E3%83%BC%E5%AE%9F%E8%A3%85%E3%81%97%E3%81%A6%E5%87%A6%E7%90%86%E3%81%AE%E9%80%B2%E6%8D%97%E8%A6%8B/
 # 進捗パーセンテージ用キュー
 queue = Queue()
 
 # プログレスバーストリーム
+
+
 @api.route('/stream')
 def stream():
     response = Response(event_stream(queue), mimetype='text/event-stream')
@@ -67,30 +67,30 @@ def event_stream(queue):
         yield "event:{event}\ndata:{data}\n\n".format(event=sse_event, data=persent)
 
 
-@api.route("/ajax", methods=['POST'])
-def ajax():
-    if request.method == 'POST':
-        start = str(datetime.datetime.now())
-        print("-------------- {} --------------".format(request.json['data']))
-        """
-        処理runner_01が終わったら10％まで進行としてキューに追加
-        runner_01()
-        queue.put(10)
- 
-        処理runner_02が終わったら20％まで進行としてキューに追加
-        runner_02()
-        queue.put(20)
-        ・・・
-        """
+# @api.route("/ajax", methods=['POST'])
+# def ajax():
+#     if request.method == 'POST':
+#         start = str(datetime.datetime.now())
+#         print("-------------- {} --------------".format(request.json['data']))
+#         """
+#         処理runner_01が終わったら10％まで進行としてキューに追加
+#         runner_01()
+#         queue.put(10)
 
-        # サンプル用ループ処理（2秒ごとに10パーセントづつ進行）
-        for i in range(10, 110, 10):
-            queue.put(str(i) + 'test')
-            time.sleep(1)
+#         処理runner_02が終わったら20％まで進行としてキューに追加
+#         runner_02()
+#         queue.put(20)
+#         ・・・
+#         """
 
-        end = str(datetime.datetime.now())
-        result = {"start": start, "end": end}
-        return jsonify(json.dumps(result))
+#         # サンプル用ループ処理（2秒ごとに10パーセントづつ進行）
+#         for i in range(10, 110, 10):
+#             queue.put(str(i) + 'test')
+#             time.sleep(1)
+
+#         end = str(datetime.datetime.now())
+#         result = {"start": start, "end": end}
+#         return jsonify(json.dumps(result))
 
 
 # @api.get('/xxx')
@@ -125,10 +125,10 @@ def py_download_company():
     val = request.json
 
     # 同期モードに応じてライブラリのインポート
-    if val.get('async'):
-        from . import mult_web as company  # 非同期処理有効：高速化、サーバー負荷増
-    else:
-        from src import company
+    # if False:  # val.get('async'):
+    #     from src import mult_company as company  # 非同期処理有効：高速化、サーバー負荷増
+    # else:
+    from src import company
     print(val)
     print('called')
 
@@ -252,21 +252,26 @@ def updateUser():
         for index, elem in enumerate(users):
             if index == payload["index"]:
                 elem[payload["key"]] = payload["value"]
-                elem["modified"] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M")
+                elem["modified"] = datetime.datetime.now().strftime(
+                    "%Y/%m/%d %H:%M")
             writer.writerow(elem)
     return payload
 
 
 @api.post('/users')
 def addUser():
-    r = request.json
+    # r = request.json
     # print(r)
     # users = r['users']
     print('call addUser')
     print(datetime.datetime.now())
     with open(USERS_CSV, 'a', encoding='cp932', newline="") as fw:
         writer = csv.DictWriter(fw, fieldnames=FIELD_NAMES)
-        newData = {"id": "", "name": "", "created": datetime.datetime.now().strftime("%Y/%m/%d %H:%M"), "modified": ""}
+        newData = {
+            "id": "",
+            "name": "",
+            "created": datetime.datetime.now().strftime("%Y/%m/%d %H:%M"),
+            "modified": ""}
         writer.writerow(newData)
     return newData
 

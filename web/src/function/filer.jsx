@@ -1,7 +1,5 @@
 import axios from 'axios'
 
-const eel = window["eel"];
-
 function mapCSVToArray(csv) {
   const dataRows = csv.split('\r\n').filter(row => row.length > 1) //filterで空行はじく
   const header = dataRows[0].split(',')

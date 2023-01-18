@@ -7,41 +7,48 @@ import datetime as dt
 import time
 import sys
 
+
 start_time = time.time()
 
-# ヘッダーからレポートの状態を取得する関数 
+# ヘッダーからレポートの状態を取得する関数
+
+
 def getReportStatus(header_text):
-    # 用いる文字列を辞書で定義する 
+    # 用いる文字列を辞書で定義する
     choices = {
         "この期間の勤務データはまだ月次提出": "状態：未入力",
         "この期間の勤務データは既に提出され": "第１段階の承認待ち",
         "この期間の実績はすでに承認済です。": "最終承認済み"
     }
-   # ヘッダー文字列をカラムが入力されているかどうかをチェック 
+    # ヘッダー文字列をカラムが入力されているかどうかをチェック
     for choice in choices:
-        # もしヘッダー文字列が辞書に定義されていれば 
+        # もしヘッダー文字列が辞書に定義されていれば
         if choice in header_text:
-            # Trueなら該当のカラムを返す 
+            # Trueなら該当のカラムを返す
             return choices[choice]
             break
-    # Falseならなにもないを返す 
+    # Falseならなにもないを返す
     return "empty"
 
-# Name属性からvalueを取得する 
+# Name属性からvalueを取得する
+
+
 def form_getattrs_value(element, name_key):
-    # 要素からname属性がname_keyかつtype属性がhiddenの値を取得し、その名前をrに格納 
+    # 要素からname属性がname_keyかつtype属性がhiddenの値を取得し、その名前をrに格納
     r = element.find(
         'input', attrs={'name': name_key, 'type': 'hidden'})
-    # 取得したrの属性のvalueを返す 
+    # 取得したrの属性のvalueを返す
     return r.get_attribute_list('value')[0]  # type:ignore
 
-# ログイン要求を行う関数 
+# ログイン要求を行う関数
+
+
 def login_request(url, user_cred):
-    # URLからログインページを取得し、現在のセッション情報を取得する 
+    # URLからログインページを取得し、現在のセッション情報を取得する
     response_0 = requests.get(url)
     soup_login = BeautifulSoup(response_0.text, 'lxml')
 
-    # ログイン処理 
+    # ログイン処理
     r = session.post(
         url=url,
         data={
@@ -56,9 +63,9 @@ def login_request(url, user_cred):
         }
     )
 
-    # ログイン完了の出力 
+    # ログイン完了の出力
     print('ログイン完了', time.time() - start_time)
-    # ログイン要求の結果を返す 
+    # ログイン要求の結果を返す
     return r
 
 
@@ -72,6 +79,7 @@ def page_frame_request():
     bs = BeautifulSoup(r.text, 'lxml')
     print('勤怠用パラメータ取得', time.time() - start_time)
     return bs
+
 
 def page_worktime_request(page_frame):
     # ----
@@ -103,7 +111,6 @@ def page_worktime_request(page_frame):
     )
 
     kintai_page = BeautifulSoup(mykintai.text, 'lxml')
-    
 
     print('勤怠情報取得完了', time.time() - start_time)
     return kintai_page
@@ -111,7 +118,8 @@ def page_worktime_request(page_frame):
 
 def get_button_params(element):
     # ボタンのリンク先を取得
-    href_str = element.attrs['onclick'].replace("location.href='cws?", '')[:-1].split('&')
+    href_str = element.attrs['onclick'].replace(
+        "location.href='cws?", '')[:-1].split('&')
     # リンク先のQueryStringをdict形式に加工
     href_dict = {x.split('=')[0]: x.split('=')[1] for x in href_str}
     return href_dict
@@ -122,8 +130,8 @@ def move_month(page, id):
     params = get_button_params(element)
 
     r = session.get(
-    url=LOGIN_URL,
-    params=params
+        url=LOGIN_URL,
+        params=params
     )
     bs_r = BeautifulSoup(r.text, 'lxml')
     return bs_r
@@ -132,7 +140,8 @@ def move_month(page, id):
 def move_target_page(page, target_year, target_month):
     # 月度移動回数
     today = dt.datetime.now()
-    move_amount = (int(today.year)*12 + int(today.month)) - (int(target_year)*12 + int(target_month))
+    move_amount = (int(today.year) * 12 + int(today.month)) - \
+        (int(target_year) * 12 + int(target_month))
     id = 'TOPRVTM' if move_amount > 0 else 'TONXTTM'
 
     if abs(move_amount) > 6:
@@ -170,24 +179,30 @@ def get_worktime(kintai_table, target_year, mode_reported=True):
 
         if mode_reported:
             worktime = row.contents[8].findAll('span')
-            projects = row.contents[13].find('table').findAll('tr') if row.contents[13].find('table') else ''
+            projects = row.contents[13].find('table').findAll(
+                'tr') if row.contents[13].find('table') else ''
             comment = row.contents[14].text
             Work = row.contents[3].text
             Actual = row.contents[10].text
         else:
-            worktime = row.contents[9].findAll('option', attrs={'selected': True})
-            projects = row.contents[14].find('table').findAll('tr') if row.contents[14].find('table') else ''
+            worktime = row.contents[9].findAll(
+                'option', attrs={'selected': True})
+            projects = row.contents[14].find('table').findAll(
+                'tr') if row.contents[14].find('table') else ''
             comment = row.contents[15].text
-            Work = row.contents[3].find('option', selected=True).text
+            if row.contents[3].find('option', selected=True):
+                Work = row.contents[3].find('option', selected=True).text
+            else:
+                Work = row.contents[3].text
             Actual = row.contents[11].text
 
-        
         if not projects:
             continue
 
         for p in projects:
             if p.findAll("td")[2].findAll('input'):
-                projtime = p.findAll("td")[2].findAll('input')[0].attrs['value'].zfill(2) + ':' + p.findAll("td")[2].findAll('input')[1].attrs['value'].zfill(2)
+                projtime = p.findAll("td")[2].findAll('input')[0].attrs['value'].zfill(
+                    2) + ':' + p.findAll("td")[2].findAll('input')[1].attrs['value'].zfill(2)
             else:
                 projtime = p.findAll("td")[2].text[1:-1]
 
@@ -197,10 +212,10 @@ def get_worktime(kintai_table, target_year, mode_reported=True):
                 "date": f"{target_year}-{row.contents[0].find(id='MONTH').text}-{row.contents[0].find(id='DAY').text}",
                 "start": f"{worktime[1].text}:{worktime[2].text}" if len(worktime) > 1 else '',
                 "end": f"{worktime[4].text}:{worktime[5].text}" if len(worktime) > 1 else '',
-                "type":p.findAll("td")[0].text+p.findAll("td")[1].text,
-                "times":projtime,
-                "actual":Actual,
-                "pjsum":projtime,
+                "type": p.findAll("td")[0].text + p.findAll("td")[1].text,
+                "times": projtime,
+                "actual": Actual,
+                "pjsum": projtime,
                 "comment": comment,
             }
             # print(temp_row)
@@ -293,12 +308,14 @@ def search_request(bs_html, url, t_year, t_month, t_employee):
     # ユーザー勤怠表示ボタンのelementを取得
     href_str = member_info.find('input', attrs={'value': '詳細'})
     # ボタンのリンク先を取得
-    href_str = href_str.attrs['onclick'].replace("location.href='cws?", '')[:-1].split('&')
+    href_str = href_str.attrs['onclick'].replace(
+        "location.href='cws?", '')[:-1].split('&')
     # リンク先のQueryStringをdict形式に加工
     href_dict = {x.split('=')[0]: x.split('=')[1] for x in href_str}
 
-
-    dispName = member_info.find('span', id='EmpNm1').text.replace('\u3000', ' ')
+    dispName = member_info.find(
+        'span', id='EmpNm1').text.replace(
+        '\u3000', ' ')
     reportStatus = member_info.find('span', id='flowinfo1').text
 
     return href_dict, dispName, reportStatus
@@ -362,33 +379,38 @@ def get_member_worktime(worktime_table, target_year, mode_reported=True):
 
     for row in worktime_table:
 
-
         if not row.contents[0].find(id='MONTH'):
             continue
 
         # print(f"{target_year}-{row.contents[0].find(id='MONTH').text}-{row.contents[0].find(id='DAY').text}")
         if mode_reported:
             worktime = row.contents[8].findAll('span')
-            projects = row.contents[32].find('table').findAll('tr') if row.contents[32].find('table') else ''
+            projects = row.contents[32].find('table').findAll(
+                'tr') if row.contents[32].find('table') else ''
             comment = row.contents[35].text
             Work = row.contents[3].text
             Actual = row.contents[10].text
-            pjsum = ":".join([x.text for x in row.contents[31].findAll('span')])
+            pjsum = ":".join(
+                [x.text for x in row.contents[31].findAll('span')])
         else:
-            worktime = row.contents[9].findAll('option', attrs={'selected': True})
-            projects = row.contents[33].find('table').findAll('tr') if row.contents[33].find('table') else ''
+            worktime = row.contents[9].findAll(
+                'option', attrs={'selected': True})
+            projects = row.contents[33].find('table').findAll(
+                'tr') if row.contents[33].find('table') else ''
             comment = row.contents[36].text
-            Work = row.contents[3].find('option', selected=True).text if row.contents[3].find('select') else row.contents[3].text
+            Work = row.contents[3].find('option', selected=True).text if row.contents[3].find(
+                'select') else row.contents[3].text
             Actual = row.contents[11].text
-            pjsum = ":".join([x.text for x in row.contents[32].findAll('span')])
-
+            pjsum = ":".join(
+                [x.text for x in row.contents[32].findAll('span')])
 
         if not projects:
             continue
 
         for p in projects:
             if p.findAll("td")[2].findAll('input'):
-                projtime = p.findAll("td")[2].findAll('input')[0].attrs['value'].zfill(2) + ':' + p.findAll("td")[2].findAll('input')[1].attrs['value'].zfill(2)
+                projtime = p.findAll("td")[2].findAll('input')[0].attrs['value'].zfill(
+                    2) + ':' + p.findAll("td")[2].findAll('input')[1].attrs['value'].zfill(2)
             else:
                 projtime = p.findAll("td")[2].text[1:-1]
 
@@ -398,9 +420,9 @@ def get_member_worktime(worktime_table, target_year, mode_reported=True):
                 "date": f"{target_year}-{row.contents[0].find(id='MONTH').text}-{row.contents[0].find(id='DAY').text}",
                 "start": f"{worktime[1].text}:{worktime[2].text}" if len(worktime) > 1 else '',
                 "end": f"{worktime[4].text}:{worktime[5].text}" if len(worktime) > 1 else '',
-                "type":p.findAll("td")[0].text+p.findAll("td")[1].text,
-                "times":projtime,
-                "actual":Actual,
+                "type": p.findAll("td")[0].text + p.findAll("td")[1].text,
+                "times": projtime,
+                "actual": Actual,
                 "pjsum": pjsum,
                 "comment": comment,
             }
@@ -410,8 +432,6 @@ def get_member_worktime(worktime_table, target_year, mode_reported=True):
 
     print('勤怠情報加工完了', time.time() - start_time)
     return result
-
-
 
 
 def report_csv(output_path: str, data: dict, empNum, empName):
@@ -431,61 +451,98 @@ def report_csv(output_path: str, data: dict, empNum, empName):
     return
 
 
+def main_member():
+    pass
+
+
 def main(params, queue):
 
     global session
     global LOGIN_URL
     # ログイン
     session = requests.Session()
-    login = login_request(url=LOGIN_URL, user_cred={'id': params['username'], 'pw': params['password']})
+    login_request(
+        url=LOGIN_URL,
+        user_cred={
+            'id': params['username'],
+            'pw': params['password']})
     completed = ['start']
     queue.put(completed)
-    
+
     # 自分の勤怠
     if params['isSelf']:
+        # パラメータを取得
         page_frame = page_frame_request()
+        # 勤怠ページを取得（当月)
         page = page_worktime_request(page_frame)
-        # worktime_table = worktime_page.find('table', id="APPROVALGRD")
-
+        # 指定年月の勤怠ページに移動
         page = move_target_page(page, params['Year'], params['Month'])
-
-        dispName = page.find('div', class_='syain').contents[1].text.replace('社員名称：\xa0', '').replace('\u3000', ' ')
-        reportStatus = getReportStatus(page.find('form', attrs={'name': 'FormListPersonalDetails'}).contents[32])
-
-        isReported = False if reportStatus=="状態：未入力" else True
-
-        result = get_worktime(page.find('table', id="APPROVALGRD"), params['Year'], isReported)
-
+        # 勤怠ページから氏名を取得
+        dispName = page.find(
+            'div',
+            class_='syain').contents[1].text.replace(
+            '社員名称：\xa0',
+            '').replace(
+            '\u3000',
+            ' ')
+        # 提出状況を取得
+        reportStatus = getReportStatus(
+            page.find(
+                'form', attrs={
+                    'name': 'FormListPersonalDetails'}).contents[32])
+        # 月次提出済みか判定(DOMが変わるため)
+        isReported = False if reportStatus == "状態：未入力" else True
+        # 勤怠情報を配列辞書形式で取得
+        result = get_worktime(
+            page.find(
+                'table',
+                id="APPROVALGRD"),
+            params['Year'],
+            isReported)
+        # Name,Num,Report列を追加
         result = [{**row, "Name": dispName, "Num": params['username'],
-                "Report": reportStatus} for row in result]
-
+                   "Report": reportStatus} for row in result]
+        # CSV出力
         output_path = f"result/company_{str(params['Year'])[2:]}{str(params['Month']).zfill(2)}_{params['username']}.csv"
         report_csv(output_path, result, params['username'], dispName)
-
+        # プログレス更新
         completed.append(params['username'])
         queue.put(completed)
-        print(time.time() - start_time)
 
     for member in params['members']:
-        queue.put(completed)
+
+        queue.put(completed)  # プログレス更新
         # メンバーの勤怠
         search_page = presearch_request()
 
-        # members = ['611674', '629606', '608401', '611646', '327328', '611606', '618329', '618679', '629588']
-        member_info, dispName, reportStatus = search_request(search_page, LOGIN_URL, params['Year'], params['Month'], member)
+        # 各種パラメータ取得
+        member_info, dispName, reportStatus = search_request(
+            search_page, LOGIN_URL, params['Year'], params['Month'], member)
+
+        # 勤怠テーブル取得
         worktime_table = member_worktime_request(member_info)
-        queue.put(completed)
-        isReported = False if reportStatus=="状態：未入力" else True
-        result = get_member_worktime(worktime_table, params['Year'], isReported)
+        queue.put(completed)  # プログレス更新
+
+        # 月次提出済みか判定(DOMが変わるため)
+        isReported = False if reportStatus == "状態：未入力" else True
+
+        # 勤怠情報を配列辞書形式で取得
+        result = get_member_worktime(
+            worktime_table, params['Year'], isReported)
+
+        # Name,Num,Report列を追加
         result = [{**row, "Name": dispName, "Num": member,
-                "Report": reportStatus} for row in result]
-        queue.put(completed)
+                   "Report": reportStatus} for row in result]
+        queue.put(completed)  # プログレス更新
+
+        # CSV出力
         output_path = f"result/company_{str(params['Year'])[2:]}{str(params['Month']).zfill(2)}_{member}.csv"
         report_csv(output_path, result, member, dispName)
-        queue.put(completed)
-        print(time.time() - start_time)
+
+        # プログレス更新
         completed.append(member)
-        queue.put(completed)
+        queue.put(completed)  # プログレス更新
+
 
 global LOGIN_URL
 LOGIN_URL = "https://gcws3.outsourcing.co.jp/cws/cws"
@@ -504,8 +561,9 @@ if __name__ == '__main__':
         "username": "608409",
         "password": "p@ssw6rd",
         "members": ['611674', '629606', '608401'],
-        "isSelf": True, # !debug
+        "isSelf": True,  # !debug
         "async": False,
     }
-
-    main(params)
+    queue = []  # 本当は from queue import Queue
+    main(params, queue)
+    print(time.time() - start_time)
