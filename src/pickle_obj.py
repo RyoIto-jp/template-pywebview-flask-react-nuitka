@@ -8,6 +8,9 @@ DIR_NAME = "./tmp"
 def pkl_dumps_loads(obj: dict[str, str], pkl_name: str) -> dict[str, str]:
     """dumps -> file.write -> file.read -> loadsを行い、pickleオブジェクトを読み書きする"""
     path: str = os.path.join(DIR_NAME, pkl_name)
+
+    os.makedirs('./tmp', exist_ok=True)
+    
     # pickleオブジェクトを書き出す
     with open(path, "wb") as f:
         f.write(pickle.dumps(obj))

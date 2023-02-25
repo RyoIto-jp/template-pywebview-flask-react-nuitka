@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/styles'
 import SimpleSelect from '../component/SimpleSelect';
 import axios from 'axios';
 
-const eel = window["eel"];
+// const eel = window["eel"];
 
 const useStyles = makeStyles({
   root: {
@@ -89,23 +89,23 @@ const DownloadsPage = () => {
       }
       setVal(data)
       console.log(sse)
-      // イベントソースからprogress-itemイベントを受信したら、progress変数を更新する
+      // // イベントソースからprogress-itemイベントを受信したら、progress変数を更新する
       sse.addEventListener('progress-item', function (e) {
         updateprogress(e.data, user_data)
       })
-      // イベントソースからlast-itemイベントを受信したら、処理終了時に必要なデータを受信する
-      sse.addEventListener('last-item', function (e) {
-        console.log(e.data)
-      })
+      // // イベントソースからlast-itemイベントを受信したら、処理終了時に必要なデータを受信する
+      // sse.addEventListener('last-item', function (e) {
+      //   console.log(e.data)
+      // })
     }
     // 開発・本番でホストを切り替える
-    const devHost = process.env.REACT_APP_HOST ? process.env.REACT_APP_HOST : ''
+    // const devHost = process.env.REACT_APP_HOST ? process.env.REACT_APP_HOST : ''
     // イベントソースを登録
-    const sse = new EventSource(devHost + '/api/stream');
+    const sse = new EventSource('/api/stream');
     setInitialFormData()
 
     return () => {
-      sse.close();
+      // sse.close();
     };
   }, [])
 
@@ -126,6 +126,7 @@ const DownloadsPage = () => {
     console.log('Submit arg')
     console.log(val)
     let result = await axios.post("/api/company", val)
+    if (result.data === "error")pyUpdateMessage("ERROR. メンバー情報が入力されていません。USERSタブで設定してください。")
     console.log('Submit ret')
     console.log(result);
     const newUsers = [...users];
@@ -143,6 +144,7 @@ const DownloadsPage = () => {
 
   /** 前回データの読み込み(Python) */
   const pyLoadHistory = async () => {
+    console.log('loadconfig')
     const response = await axios.get("/api/loadconfig?" + 'obj_name=company_cond')
     let result = response.data
     result.members = val.members;

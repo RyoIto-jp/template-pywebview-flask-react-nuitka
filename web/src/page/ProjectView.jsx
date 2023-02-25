@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar } from 'recharts'
+// import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar } from 'recharts'
+import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar } from '../function/Recharts'
 import { FormControlLabel, FormControl, FormLabel, RadioGroup, Radio } from "@material-ui/core";
 import { makeStyles } from '@material-ui/styles'
 

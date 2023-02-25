@@ -67,38 +67,6 @@ def event_stream(queue):
         yield "event:{event}\ndata:{data}\n\n".format(event=sse_event, data=persent)
 
 
-# @api.route("/ajax", methods=['POST'])
-# def ajax():
-#     if request.method == 'POST':
-#         start = str(datetime.datetime.now())
-#         print("-------------- {} --------------".format(request.json['data']))
-#         """
-#         処理runner_01が終わったら10％まで進行としてキューに追加
-#         runner_01()
-#         queue.put(10)
-
-#         処理runner_02が終わったら20％まで進行としてキューに追加
-#         runner_02()
-#         queue.put(20)
-#         ・・・
-#         """
-
-#         # サンプル用ループ処理（2秒ごとに10パーセントづつ進行）
-#         for i in range(10, 110, 10):
-#             queue.put(str(i) + 'test')
-#             time.sleep(1)
-
-#         end = str(datetime.datetime.now())
-#         result = {"start": start, "end": end}
-#         return jsonify(json.dumps(result))
-
-
-# @api.get('/xxx')
-# def python_function(val):
-#     print(val)  # (val + " from JavaScript")
-#     eel.run_js_from_python(val)  # ("result: " + val)
-#     time.sleep(3)
-
 
 @api.get('/xxx6')
 def load_labels_from_file():
@@ -137,6 +105,11 @@ def py_download_company():
 
     # membersパラメータを文字列からリスト形式に変換する
     members = getMembers(val['members'])
+
+    if members == '':
+      queue.put(['errorです。メンバー情報が入力されていません。'])
+      return 'error'
+
     val['members'] = members
 
     print(members)

@@ -5,17 +5,14 @@
   "homepage": "./",
   "proxy": "http://localhost:5000",
   "dependencies": {
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/styles": "^4.11.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.2.2",
+    "axios": "^1.2.3",
     "react": "^18.2.0",
-    "react-d3-speedometer": "^1.1.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "recharts": "^2.3.2",
@@ -23,13 +20,14 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build": "set GENERATE_SOURCEMAP=false&&react-app-rewired build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "compile": "nuitka serverapp.py --standalone --onefile --follow-imports --include-data-dir=web/gui=web/gui --output-dir=dist --windows-icon-from-ico=web/public/favicon.ico --windows-disable-console",
     "compile:dev": "nuitka serverapp.py --standalone --onefile --follow-imports --include-data-dir=web/gui=web/gui --output-dir=dist --windows-icon-from-ico=web/public/favicon.ico",
-    "gui": "./myvenv/scripts/python serverapp.py",
-    "dev": "./myvenv/scripts/python serverflask.py && yarn start"
+    "gui": "./myvenv/scripts/python serverapp.py --dev",
+    "dev": "./myvenv/scripts/python serverflask.py && yarn start",
+    "alz": "set GENERATE_SOURCEMAP=true&&yarn build && source-map-explorer 'web/gui/static/js/*.js'"
   },
   "eslintConfig": {
     "extends": [
@@ -50,6 +48,7 @@
     ]
   },
   "devDependencies": {
-    "react-app-rewired": "^2.2.1"
+    "react-app-rewired": "^2.2.1",
+    "source-map-explorer": "^2.5.3"
   }
 }

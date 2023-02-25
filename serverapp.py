@@ -7,6 +7,9 @@ import sys
 from src.blueprint.webui import webui
 from src.blueprint.api import api
 
+# import time
+# StartTime = time.time()
+
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False     # 日本語文字化け対策
 app.config["JSON_SORT_KEYS"] = False    # ソートをそのまま
@@ -31,7 +34,10 @@ def index():
 
 
 if __name__ == '__main__':
-
+    DEBUG_MODE = False
+    if len(sys.argv) > 1:
+      DEBUG_MODE = True if sys.argv[1] == '--dev' else False
+      
     pri_screen = get_primary_screensize()
 
     screen_width = int(pri_screen.width *
@@ -42,5 +48,5 @@ if __name__ == '__main__':
     # webview.create_window("PyWebView & Flask", "http://localhost:3100")
     webview.create_window("PyWebView & Flask", app,
                           width=screen_width, height=screen_height)
-    webview.start(debug=True)
+    webview.start(debug=DEBUG_MODE)
     sys.exit()

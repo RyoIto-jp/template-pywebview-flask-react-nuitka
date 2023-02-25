@@ -120,7 +120,7 @@ const UsersPage = () => {
             {errMsg !== "" && <div className={cls.error}>{errMsg}</div>}
             <div style={{ display: "flex" }}>
                 <p className={cls.message}>テキスト入力欄は、編集後にEnterボタンを押すことで更新することができます。<br />
-                    CSVを直接編集することも可能です。<a href="#" onClick={openCsv} style={{ color: 'blue', textDecoration: 'underline' }}>CSVを開く</a></p>
+                    CSVを直接編集することも可能です。<button onClick={openCsv} style={{ color: 'blue', textDecoration: 'underline', border:'none', backgroundColor: "transparent" }}>CSVを開く</button></p>
                 <div className={cls.reload} onClick={reloadUsers} title="CSV直接編集後はクリックでテーブル更新"><Replay></Replay></div>
             </div>
             <br />

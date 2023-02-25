@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import datetime as dt
 import time
 import sys
+import os
 
 
 start_time = time.time()
@@ -435,6 +436,8 @@ def get_member_worktime(worktime_table, target_year, mode_reported=True):
 
 
 def report_csv(output_path: str, data: dict, empNum, empName):
+
+    os.makedirs('./result', exist_ok=True)
     # CSV出力
     with open(output_path, 'w', encoding="utf_8_sig") as f:
         if data:
@@ -543,6 +546,9 @@ def main(params, queue):
         completed.append(member)
         queue.put(completed)  # プログレス更新
 
+    completed.append('完了しました')
+    queue.put(completed)
+
 
 global LOGIN_URL
 LOGIN_URL = "https://gcws3.outsourcing.co.jp/cws/cws"
@@ -559,11 +565,12 @@ if __name__ == '__main__':
         "Year": "2023",
         "Month": "1",
         "username": "608409",
-        "password": "p@ssw6rd",
+        "password": "p@ssw7rd",
         "members": ['611674', '629606', '608401'],
         "isSelf": True,  # !debug
         "async": False,
     }
-    queue = []  # 本当は from queue import Queue
-    main(params, queue)
+    # queue = []  # 本当は from queue import Queue
+    from queue import Queue
+    main(params, Queue())
     print(time.time() - start_time)

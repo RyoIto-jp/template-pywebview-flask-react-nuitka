@@ -1,40 +1,34 @@
-import React, { Component } from "react";
-// import {hot} from 'react-hot-loader'
-// import './App.css';
+import React, {Suspense} from "react";
 
 import { CenteredTabs } from './component/Tabs';
-import ViewPages from './page/ViewPages';
-import DownloadsPage from './page/DownloadsPage'
-import UsersPage from "./page/UsersPage";
+// import ViewPages from './page/ViewPages';
+// import DownloadsPage from './page/DownloadsPage'
+// import UsersPage from "./page/UsersPage";
 
-// import { eel } from "./function/eel.js";
+const ViewPages = React.lazy(()=> import("./page/ViewPages"));
+const DownloadsPage = React.lazy(()=> import("./page/DownloadsPage"));
+const UsersPage = React.lazy(()=> import("./page/UsersPage"));
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    // eel.set_host("ws://localhost:8888");
-    // eel.hello();
-  }
-  render() {
-    return (
-      <div>
-        <CenteredTabs labels={[
+function App() {
+  return (
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+      <CenteredTabs
+        labels={[
+          // "Logs",
           "Views",
           "Downloads",
           "Users",
-          // "Logs",
-        ]}>
-          <ViewPages></ViewPages>
-          <DownloadsPage></DownloadsPage>
-          <UsersPage></UsersPage>
-          {/* <p>test</p> */}
-          {/* <p>test</p> */}
-          {/* <p>test</p> */}
-        </CenteredTabs>
-      </div>
-    );
-  }
+        ]}
+      >
+        {/* <p>test</p> */}
+        <ViewPages />
+        <DownloadsPage />
+        <UsersPage />
+      </CenteredTabs>
+      </Suspense>
+    </div>
+  );
 }
 
 export default App;
-// export default process.env.NODE_ENV === "development" ? hot(module)(App) : App
